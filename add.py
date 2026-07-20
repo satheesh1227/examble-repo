@@ -9,3 +9,7 @@ print(a-b)
 a=1
 b=2
 print(a*b)
+
+a=3
+b=8
+print(a/b)
