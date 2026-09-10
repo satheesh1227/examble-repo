@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Clean old container and image') {
+            steps {
+                sh '''
+                    # Stop container only if it exists
+                    if sudo docker ps -a --format '{{.Names}}' | grep -q '^flask$'; then
+                        sudo docker stop flask || true
+                        sudo docker rm flask || true
+                    fi
+
+                    # Remove image only if it exists
+                    if sudo docker image inspect myflaskimage:latest > /dev/null 2>&1; then
+                        sudo docker rmi -f myflaskimage:latest || true
+                    fi
+                '''
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh '''
+                    sudo docker build -t myflaskimage:latest .
+                '''
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                    sudo docker run -d \
+                        -p 80:80 \
+                        -v "$(pwd)/index.html:/usr/share/flask/html/index.html" \
+                        --name flask \
+                        myflaskimage:latest
+                '''
+            }
+        }
+    }
+}
