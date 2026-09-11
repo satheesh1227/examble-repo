@@ -5,7 +5,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git branch: 'main',
+                git branch: 'nginix',
                     url: 'https://github.com/satheesh1227/examble-repo.git'
             }
         }
