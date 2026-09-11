@@ -31,7 +31,7 @@ pipeline {
                 sh '''
                     sudo docker stop flaskapp || true
                     sudo docker rm flaskapp || true
-                    sudo docker run -d --name flaskapp -p 5002:5000 myflaskimage:latest
+                    sudo docker run -d --name flaskapp -p 5002:5002 myflaskimage:latest
                 '''
             }
         }
