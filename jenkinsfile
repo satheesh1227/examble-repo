@@ -10,6 +10,16 @@ pipeline {
             }
         }
 
+        stage('Check Files') {
+    steps {
+        sh '''
+            pwd
+            ls -la
+            find . -maxdepth 2 -name Dockerfile -print
+        '''
+    }
+}
+
         stage('Build Docker Image') {
             steps {
                 sh 'sudo docker build -t myflaskimage:latest .'
