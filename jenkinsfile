@@ -3,39 +3,25 @@ pipeline {
 
     stages {
 
-        stage('Clean old container and image') {
+        stage('Checkout') {
             steps {
-                sh '''
-                    # Stop container only if it exists
-                    if sudo docker ps -a --format '{{.Names}}' | grep -q '^flask$'; then
-                        sudo docker stop flask || true
-                        sudo docker rm flask || true
-                    fi
-
-                    # Remove image only if it exists
-                    if sudo docker image inspect myflaskimage:latest > /dev/null 2>&1; then
-                        sudo docker rmi -f myflaskimage:latest || true
-                    fi
-                '''
+                git branch: 'main',
+                    url: ''
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
-                sh '''
-                    sudo docker build -t myflaskimage:latest .
-                '''
+                sh 'sudo docker build -t myflaskimage:latest .'
             }
         }
 
         stage('Deploy') {
             steps {
                 sh '''
-                    sudo docker run -d \
-                        -p 80:80 \
-                        -v "$(pwd)/index.html:/usr/share/flask/html/index.html" \
-                        --name flask \
-                        myflaskimage:latest
+                    sudo docker stop flaskapp || true
+                    sudo docker rm flaskapp || true
+                    sudo docker run -d --name flaskapp -p 5000:5000 myflaskimage:latest
                 '''
             }
         }
